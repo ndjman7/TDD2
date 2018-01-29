@@ -23,7 +23,7 @@ class NewVisitorTest(unittest.TestCase):
         self.assertIn('To-Do', header_text)
 
         # Pando는 바로 To-Do를 추가하기로 한다
-        inputbox = self.browser.find_element_by_tag_id('id_new_item')
+        inputbox = self.browser.find_element_by_id('id_new_item')
         self.assertEqual(
                 inputbox.get_attribute('placeholder'),
                 '작업 아이템 입력'
@@ -35,12 +35,13 @@ class NewVisitorTest(unittest.TestCase):
 
         # 엔터키를 치면 페이지가 갱신되고 작업 목록에
         # "1: 운동 하기" 아이템이 추가된다
-        inputbox.send_keys(Keys.Enter)
+        inputbox.send_keys(Keys.ENTER)
 
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
             any(row.text == '1: 운동 하기' for row in rows),
+            "신규 작업이 테이블에 표시되지 않는다"
         )
 
         # 추가 아이템을 입력할 수 있는 여분의 텍스트 상자가 존재한다
