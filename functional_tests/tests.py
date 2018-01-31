@@ -66,7 +66,7 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
 
         # 페이지는 다시 갱신되고, 두 개 아이템이 목록에 보인다
-        oelf.wait_for_row_in_list_table('2: 운동 후 단백질 섭취하기')
+        self.wait_for_row_in_list_table('2: 운동 후 단백질 섭취하기')
         self.wait_for_row_in_list_table('1: 운동 하기')
 
         # Pando는 사이트가 입력한 목록을 저장하고 있는지 궁금하다
@@ -75,3 +75,46 @@ class NewVisitorTest(LiveServerTestCase):
         self.fail('Finish the test!')
 
         # 만족하고 잠자리에 든다
+
+    def test_multiple_users_can_start_lists_at_different_urls(self):
+        # Pando는 새로운 To-Do 리스트를 시작한다.
+        self. browser.get(self.live_server_url)
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy peacock feathers')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Buy peacock feathers')
+
+        # Pando는 고유의 URL을 가지고 있다
+        pando_list_url = self.browser.current_url
+        self.assertRegex(pando_list_url, '/lists/.+')
+
+        # 이제 새로운 유저, Ra가 사이트로 온다
+        ## 우리는 정보가 없는 새로운 브라우저 세션을 사용한다
+        ##  Pando의 쿠키가 없어야 한다
+        self.browser.quit()
+        self.browser = webdriver.Chrome()
+
+        # Ra가 사이트에 방문한다. Pando의 리스트가 없다
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy peacock feathers')
+        self.assertNotIn('make a fly', page_text)
+
+        # Ra는 새로운 아이템을 리스트에 추가한다
+        # 그는 Pando보다 노잼
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_kyes(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Buy milk')
+
+        # Ra는 고유 URL을 가진다
+        ra_list_url = self.browser.current_url
+        self.assertRegex(ra_list_url, '/list/.+')
+        self.assertNotEqual(ra_list_url, pando_list_url)
+
+        # 다시 Pando의 흔적은 없다
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy peacock feathers', page_text)
+        self.assertIn('Buy milk', page_text)
+
+        # 만족하고 같이 자러간다
