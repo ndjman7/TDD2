@@ -97,14 +97,14 @@ class NewVisitorTest(LiveServerTestCase):
         # Ra가 사이트에 방문한다. Pando의 리스트가 없다
         self.browser.get(self.live_server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
-        self.assertNotIn('Buy peacock feathers')
+        self.assertNotIn('Buy peacock feathers', page_text)
         self.assertNotIn('make a fly', page_text)
 
         # Ra는 새로운 아이템을 리스트에 추가한다
         # 그는 Pando보다 노잼
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Buy milk')
-        inputbox.send_kyes(Keys.ENTER)
+        inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')
 
         # Ra는 고유 URL을 가진다
