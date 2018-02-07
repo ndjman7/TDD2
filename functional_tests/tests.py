@@ -109,7 +109,7 @@ class NewVisitorTest(LiveServerTestCase):
 
         # Ra는 고유 URL을 가진다
         ra_list_url = self.browser.current_url
-        self.assertRegex(ra_list_url, '/list/.+')
+        self.assertRegex(ra_list_url, '/lists/.+')
         self.assertNotEqual(ra_list_url, pando_list_url)
 
         # 다시 Pando의 흔적은 없다
