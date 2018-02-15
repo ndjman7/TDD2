@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicron server for DOMAIN
+
+[Service]
+Restart=on-failure
+User=pando
+WorkingDirectory=/home/pando/sites/DOMAIN
+EnvironmentFile=/home/pando/sites/DOMAIN/.env
+
+ExecStart=/home/pando/sites/DOMAIN/virtualenv/bin/gunicorn \
+    --bind unix:/tmp/DOMAIN.socket \
+    superlists.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
